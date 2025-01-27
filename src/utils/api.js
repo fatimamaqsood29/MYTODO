@@ -30,23 +30,30 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
+  
+      // Check if the response is OK
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Login failed');
       }
-
+  
+      // Parse the response body as JSON
       const data = await response.json();
-      
-      // Assuming the response contains a token field
-      if (data.token) {
-        // Store the token in localStorage
-        localStorage.setItem('token', data.token);
+  
+      // Log the data to check what is being returned
+      console.log("Login response data:", data);
+  
+      // Check if token is in the response and store it
+      if (data.access_token) {
+        localStorage.setItem('token', data.access_token);
+        console.log("Token saved to localStorage:", data.access_token); // Log to verify
+      } else {
+        throw new Error('No token found in response');
       }
-
-      return data;
+  
+      return data; // Return the response data
     } catch (error) {
-      console.error('Login error:', error);  // Log the error
+      console.error('Login error:', error);
       throw new Error(error.message || 'Login request failed');
     }
   },
@@ -73,24 +80,87 @@ export const api = {
     }
   },
 
-  getTodos: async () => {
+//   getTodos: async () => {
+//     try {
+//       const response = await fetch(`${BASE_URL}/api/todos/get`, {
+//         method: 'GET',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Authorization': `Bearer ${localStorage.getItem('token')}`, // Get token from localStorage
+//         },
+//       });
+
+//       if (!response.ok) {
+//         const errorData = await response.json();
+//         throw new Error(errorData.message || 'Failed to fetch todos');
+//       }
+
+//       return await response.json();
+//     } catch (error) {
+//       throw new Error(error.message || 'Get todos request failed');
+//     }
+//   },
+// };
+getTodos: async () => {
     try {
+      // Retrieve the token from localStorage
+      const token = localStorage.getItem('token');
+  
+      // Check if token is available
+      if (!token) {
+        throw new Error('No token found in localStorage');
+      }
+  
       const response = await fetch(`${BASE_URL}/api/todos/get`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // Get token from localStorage
+          'Authorization': `Bearer ${token}`, // Add the token in the Authorization header
         },
       });
-
+  
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch todos');
+        throw new Error('Failed to fetch todos');
       }
-
+  
       return await response.json();
     } catch (error) {
+      console.error('Get todos error:', error);
       throw new Error(error.message || 'Get todos request failed');
     }
   },
+  updateTodo: async ({ id, title, description }) => {
+    const response = await fetch(`${BASE_URL}/api/todos/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify({ title, description }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update todo');
+    }
+
+    return await response.json();
+  },
+
+  deleteTodo: async ({ id }) => {
+    const response = await fetch(`${BASE_URL}/api/todos/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to delete todo');
+    }
+
+    return await response.json();
+  },
+
 };
