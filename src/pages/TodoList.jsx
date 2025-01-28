@@ -61,10 +61,20 @@ const TodoList = () => {
     setDescription('');
   };
 
-  const handleDeleteTodo = (id) => {
+//   const handleDeleteTodo = (id) => {
+//     console.log("Deleting todo with ID:", id); // Debugging ID
+
+//     deleteTodo({ id });
+//   };
+const handleDeleteTodo = (id) => {
+    if (!id) {
+      console.error("Error: Todo ID is missing");
+      toast.error("Error: Todo ID is missing");
+      return;
+    }
+    console.log("Deleting todo with ID:", id);
     deleteTodo({ id });
   };
-
   return (
     <div className="max-w-md mx-auto p-4 border rounded-md shadow-md">
       <h2 className="text-xl mb-4">Todo List</h2>
@@ -94,7 +104,7 @@ const TodoList = () => {
 
       <ul>
         {todos?.map((todo) => (
-          <li key={todo._id} className="p-2 border-b flex items-center justify-between">
+          <li key={todo.id} className="p-2 border-b flex items-center justify-between">
             <div>
               <span>{todo.title} - {todo.description}</span>
             </div>
@@ -106,7 +116,7 @@ const TodoList = () => {
                 <FaEdit />
               </button>
               <button
-                onClick={() => handleDeleteTodo(todo._id)}
+                onClick={() => handleDeleteTodo(todo.id)}
                 className="text-red-500 hover:text-red-700"
               >
                 <FaTrash />
