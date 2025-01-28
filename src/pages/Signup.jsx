@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate(); 
 
   const formik = useFormik({
     initialValues: {
@@ -28,7 +28,7 @@ const Signup = () => {
       try {
         const response = await api.signup(values);
         toast.success('Signup successful!');
-        navigate('/login'); // Redirect to login after successful signup
+        navigate('/login'); 
       } catch (error) {
         toast.error(error.message || 'Signup failed');
       }
@@ -70,7 +70,7 @@ const Signup = () => {
           )}
         </div>
 
-        {/* Password Field */}
+        
         <div className="mb-4 relative">
           <label
             htmlFor="password"
@@ -103,7 +103,7 @@ const Signup = () => {
           )}
         </div>
 
-        {/* Sign Up Button */}
+        
         <button
           type="submit"
           className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"

@@ -115,7 +115,7 @@ getTodos: async () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Add the token in the Authorization header
+          'Authorization': `Bearer ${token}`, 
         },
       });
   
@@ -167,7 +167,6 @@ deleteTodo: async function (id) {
       throw new Error(errorData.message || 'Failed to delete todo');
     }
 
-    // Backend may or may not return a body on successful deletion
     return await response.json().catch(() => ({ message: 'Todo deleted successfully' }));
   } catch (error) {
     console.error("Error deleting todo:", error);

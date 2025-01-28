@@ -45,10 +45,10 @@ const TodoList = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (editTodoId) {
-      // Update Todo when editing
+
       updateTodo({ id: editTodoId, title, description });
     } else {
-      // Create new Todo when not editing
+    
       createTodo({ title, description, completed: false });
     }
     setTitle('');
@@ -56,7 +56,7 @@ const TodoList = () => {
   };
 
   const handleEditTodo = (todo) => {
-    setEditTodoId(todo.id); // Use correct identifier
+    setEditTodoId(todo.id);
     setTitle(todo.title);
     setDescription(todo.description);
   };
