@@ -73,7 +73,7 @@ const handleDeleteTodo = (id) => {
       return;
     }
     console.log("Deleting todo with ID:", id);
-    deleteTodo({ id });
+    deleteTodo( id );
   };
   return (
     <div className="max-w-md mx-auto p-4 border rounded-md shadow-md">

@@ -147,57 +147,31 @@ getTodos: async () => {
     return await response.json();
   },
 
-//   deleteTodo: async function({ id }) {
-//     // Check if the ID is provided
-//     if (!id) {
-//       throw new Error("Todo ID is required to delete");
-//     }
-  
-//     try {
-//       let response = await fetch(`${BASE_URL}/api/todos/delete/${id}`, {
-//         method: 'DELETE',
-//         headers: {
-//           'Authorization': `Bearer ${localStorage.getItem('token')}`,
-//         },
-//       });
-  
-//       // If the response is not OK, handle the error
-//       if (!response.ok) {
-//         let errorData = await response.json();
-//         throw new Error(errorData.message || 'Failed to delete todo');
-//       }
-  
-//       // Return the parsed response JSON if the deletion is successful
-//       let data = await response.json();
-//       return data;
-  
-//     } catch (error) {
-//       // Catch and log any errors during the fetch operation
-//       console.error("Error deleting todo:", error);
-//       throw new Error(error.message || "An unexpected error occurred");
-//     }
-//   }
-deleteTodo: async function({ id }) {
-    if (!id) {
-      throw new Error("Todo ID is required to delete");
-    }
-    try {
-      const response = await fetch(`${BASE_URL}/api/todos/delete/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete todo');
-      }
-  
-      return await response.json();
-    } catch (error) {
-      console.error("Error deleting todo:", error);
-      throw new Error(error.message || "An unexpected error occurred");
-    }
+deleteTodo: async function (id) {
+  if (!id) {
+    throw new Error("Todo ID is required to delete");
   }
+
+  try {
+    const response = await fetch(`${BASE_URL}/api/todos/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    // Handle possible response errors
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to delete todo');
+    }
+
+    // Backend may or may not return a body on successful deletion
+    return await response.json().catch(() => ({ message: 'Todo deleted successfully' }));
+  } catch (error) {
+    console.error("Error deleting todo:", error);
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+}
 };
