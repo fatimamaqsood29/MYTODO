@@ -5,8 +5,11 @@ import { api } from '../utils/api';
 import { toast } from 'react-toastify';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 
+import { useNavigate } from 'react-router-dom';
+
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate(); // Initialize navigate
 
   const formik = useFormik({
     initialValues: {
@@ -25,7 +28,7 @@ const Signup = () => {
       try {
         const response = await api.signup(values);
         toast.success('Signup successful!');
-        console.log(response);
+        navigate('/login'); // Redirect to login after successful signup
       } catch (error) {
         toast.error(error.message || 'Signup failed');
       }

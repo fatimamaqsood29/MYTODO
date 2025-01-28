@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { useQuery, useMutation } from 'react-query';
 import { api } from '../utils/api';
 import { toast } from 'react-toastify';
-import { FaEdit, FaTrash } from 'react-icons/fa';  // Importing icons
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const TodoList = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [editTodoId, setEditTodoId] = useState(null);  // For tracking the todo being edited
+  const [editTodoId, setEditTodoId] = useState(null); // Track editing todo
+
   const { data: todos, refetch } = useQuery('todos', api.getTodos);
 
-  const { mutate: createTodo, isLoading: creatingTodo } = useMutation(api.createTodo, {
+  const { mutate: createTodo } = useMutation(api.createTodo, {
     onSuccess: () => {
       toast.success('Todo Created');
       refetch();
@@ -24,7 +25,7 @@ const TodoList = () => {
     onSuccess: () => {
       toast.success('Todo Updated');
       refetch();
-      setEditTodoId(null);  // Reset edit mode
+      setEditTodoId(null); // Reset edit mode
     },
     onError: (error) => {
       toast.error(error.message || 'Error updating todo');
@@ -41,44 +42,37 @@ const TodoList = () => {
     },
   });
 
-  const handleCreateTodo = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    createTodo({ title, description, completed: false });
+    if (editTodoId) {
+      // Update Todo when editing
+      updateTodo({ id: editTodoId, title, description });
+    } else {
+      // Create new Todo when not editing
+      createTodo({ title, description, completed: false });
+    }
     setTitle('');
     setDescription('');
   };
 
   const handleEditTodo = (todo) => {
-    setEditTodoId(todo._id);
+    setEditTodoId(todo.id); // Use correct identifier
     setTitle(todo.title);
     setDescription(todo.description);
   };
 
-  const handleUpdateTodo = (e) => {
-    e.preventDefault();
-    updateTodo({ id: editTodoId, title, description });
-    setTitle('');
-    setDescription('');
-  };
-
-//   const handleDeleteTodo = (id) => {
-//     console.log("Deleting todo with ID:", id); // Debugging ID
-
-//     deleteTodo({ id });
-//   };
-const handleDeleteTodo = (id) => {
+  const handleDeleteTodo = (id) => {
     if (!id) {
-      console.error("Error: Todo ID is missing");
       toast.error("Error: Todo ID is missing");
       return;
     }
-    console.log("Deleting todo with ID:", id);
-    deleteTodo( id );
+    deleteTodo(id);
   };
+
   return (
     <div className="max-w-md mx-auto p-4 border rounded-md shadow-md">
       <h2 className="text-xl mb-4">Todo List</h2>
-      <form onSubmit={editTodoId ? handleUpdateTodo : handleCreateTodo} className="mb-4">
+      <form onSubmit={handleSubmit} className="mb-4">
         <input
           type="text"
           placeholder="Title"
@@ -96,7 +90,6 @@ const handleDeleteTodo = (id) => {
         <button
           type="submit"
           className="w-full p-2 bg-blue-500 text-white rounded"
-          disabled={creatingTodo}
         >
           {editTodoId ? 'Update Todo' : 'Add Todo'}
         </button>
